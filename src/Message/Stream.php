@@ -37,7 +37,7 @@ class Stream implements StreamInterface{
      * 
      * @throws  Exception\InvalidStreamReferencedException
      */
-    public static function fromPath(string $path, string $mode){
+    public static function fromPath(string $path, string $mode = "r"){
         $resource   = fopen($path, $mode);
         
         if($resource === false){
