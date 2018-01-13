@@ -13,4 +13,4 @@
  */
 namespace Fratily\Http\Message\Exception;
 
-interface HttpException{}
+interface HttpMessageException{}

@@ -13,7 +13,7 @@
  */
 namespace Fratily\Http\Message\Exception;
 
-class UnwritableException extends \RuntimeException implements HttpException{
+class UnwritableException extends \RuntimeException implements HttpMessageException{
     
     public function __construct(string $msg = null, int $code = 0, \Throwable $prev = null){
         $msg    = $msg ?? "Cant write to the stream";

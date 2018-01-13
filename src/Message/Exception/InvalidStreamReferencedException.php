@@ -13,7 +13,7 @@
  */
 namespace Fratily\Http\Message\Exception;
 
-class InvalidStreamReferencedException extends \RuntimeException implements HttpException{
+class InvalidStreamReferencedException extends \RuntimeException implements HttpMessageException{
     
     public function __construct(string $msg = null, int $code = 0, \Throwable $prev = null){
         $msg    = $msg ?? "Reference to invalid stream";

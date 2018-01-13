@@ -13,7 +13,7 @@
  */
 namespace Fratily\Http\Message\Exception;
 
-class UnusableException extends \RuntimeException implements HttpException{
+class UnusableException extends \RuntimeException implements HttpMessageException{
     
     public function __construct(string $msg = null, int $code = 0, \Throwable $prev = null){
         $msg    = $msg ?? "The stream is in an unusable state";

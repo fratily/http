@@ -13,7 +13,7 @@
  */
 namespace Fratily\Http\Message\Exception;
 
-class UnseekableException extends \RuntimeException implements HttpException{
+class UnseekableException extends \RuntimeException implements HttpMessageException{
     
     public function __construct(string $msg = null, int $code = 0, \Throwable $prev = null){
         $msg    = $msg ?? "Cant seek pointer in the stream";
