@@ -266,8 +266,12 @@ class Message implements MessageInterface{
      * {@inheritdoc}
      */
     public function withBody(StreamInterface $body){
-        $return = clone $this;
-        $return->body   = $body;
+        if($this->body === $body){
+            $return = $this;
+        }else{
+            $return = clone $this;
+            $return->body   = $body;
+        }
 
         return $return;
     }
