@@ -22,9 +22,9 @@ use Psr\Http\Message\StreamInterface;
 class Message implements MessageInterface{
 
     const PROTOCOL_VERSION  = [
-        "1.0"   => true,
-        "1.1"   => true,
-        "2"     => true
+        "1.0"   => 1,
+        "1.1"   => 2,
+        "2"     => 4
     ];
 
     const REGEX_NAME    = "/\A[0-9a-z-!#$%&'*+.^_`|~]+\z/i";
