@@ -28,6 +28,15 @@ class Stream implements StreamInterface{
     private $resource;
 
     /**
+     * Create new instance for stdin stream
+     * 
+     * @return  StdinStream
+     */
+    public static function stdin(){
+        return new StdinStream();
+    }
+    
+    /**
      * Create new instance from file path
      *
      * @param   string  $path
