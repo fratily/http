@@ -98,7 +98,11 @@ class Message implements MessageInterface{
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(array $headers, StreamInterface $body, string $version = "1.1"){
+    public function __construct(
+        array $headers,
+        StreamInterface $body,
+        string $version = "1.1"
+    ){
         if(($headers = self::validHeaders($headers)) === false){
             throw new \InvalidArgumentException();
         }else if(!isset(self::PROTOCOL_VERSION[$version])){
