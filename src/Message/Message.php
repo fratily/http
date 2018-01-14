@@ -94,7 +94,7 @@ class Message implements MessageInterface{
      *
      * @param   mixed[] $headers
      * @param   StreamInterface    $body
-     * @param   string  $protVer
+     * @param   string  $version
      *
      * @throws \InvalidArgumentException
      */
