@@ -37,6 +37,17 @@ class Stream implements StreamInterface{
     }
     
     /**
+     * Create new instance for memory stream
+     * 
+     * @param   string  $mode
+     * 
+     * @return  static
+     */
+    public static function memory(string $mode = "wb+"){
+        return static::fromPath("php://memory", $mode);
+    }
+    
+    /**
      * Create new instance from file path
      *
      * @param   string  $path
