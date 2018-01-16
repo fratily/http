@@ -68,29 +68,6 @@ class UploadFile implements UploadedFileInterface{
     private $moved  = false;
     
     /**
-     * 
-     * @param   string  $name
-     *      $_FILES index key.
-     * 
-     * @return  static
-     * 
-     * @throws  \RuntimeException
-     */
-    public function fromName(string $name){
-        if(!isset($_FILES[$name])){
-            throw new \RuntimeException;
-        }
-        
-        return new static(
-            $_FILES[$name]["tmp_name"] ?? "",
-            $_FILES[$name]["name"] ?? "",
-            $_FILES[$name]["type"] ?? "",
-            $_FILES[$name]["size"] ?? 0,
-            $_FILES[$name]["error"] ?? -1
-        );
-    }
-    
-    /**
      * Constructor
      * 
      * @param   string  $temp
