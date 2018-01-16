@@ -30,10 +30,19 @@ class Stream implements StreamInterface{
     /**
      * Create new instance for stdin stream
      * 
-     * @return  StdinStream
+     * @return  Stream\StdinStream
      */
     public static function stdin(){
-        return new StdinStream();
+        return new Stream\StdinStream();
+    }
+    
+    /**
+     * Create new instance for stdout stream
+     * 
+     * @return  static
+     */
+    public static function stdout(){
+        return new static(STDOUT);
     }
     
     /**
@@ -45,6 +54,17 @@ class Stream implements StreamInterface{
      */
     public static function memory(string $mode = "wb+"){
         return static::fromPath("php://memory", $mode);
+    }
+    
+    /**
+     * Create new instance for temp stream
+     * 
+     * @param   string  $mode
+     * 
+     * @return  static
+     */
+    public static function temp(string $mode = "wb+"){
+        return static::fromPath("php://temp", $mode);
     }
     
     /**
