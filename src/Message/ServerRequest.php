@@ -19,7 +19,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
 /**
- *
+ * @todo ファクトリを作る
  */
 class ServerRequest extends Request implements ServerRequestInterface{
     
@@ -52,7 +52,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
      * @var mixed[]
      */
     private $attributes     = [];
-
+    
     /**
      * UploadFiles配列のバリデーションを行う
      * 
