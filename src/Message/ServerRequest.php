@@ -53,7 +53,17 @@ class ServerRequest extends Request implements ServerRequestInterface{
      */
     private $attributes     = [];
 
-    private static function validUploadFiles(array $uploadFiles){
+    /**
+     * UploadFiles配列のバリデーションを行う
+     * 
+     * @param   mixed   $uploadFiles
+     * @return  bool
+     */
+    private static function validUploadFiles($uploadFiles){
+        if(!is_array($uploadFiles)){
+            return false;
+        }
+        
         foreach($uploadFiles as $file){
             if(is_array($file)){
                 if(self::validUploadFiles($file)){
@@ -79,6 +89,8 @@ class ServerRequest extends Request implements ServerRequestInterface{
      * @param   mixed[] $queryParams
      * @param   mixed[]|object|null $parsedBody
      * @param   string  $version
+     * 
+     * @throws  \InvalidArgumentException
      */
     public function __construct(
         string $method,
@@ -199,6 +211,8 @@ class ServerRequest extends Request implements ServerRequestInterface{
 
     /**
      * {@inheritdoc}
+     * 
+     * @throws  \InvalidArgumentException
      */
     public function getAttribute($name, $default = null){
         if(!is_scalar($name)){
@@ -211,6 +225,8 @@ class ServerRequest extends Request implements ServerRequestInterface{
 
     /**
      * {@inheritdoc}
+     * 
+     * @throws  \InvalidArgumentException
      */
     public function withAttribute($name, $value){
         if(!is_scalar($name)){
@@ -231,6 +247,8 @@ class ServerRequest extends Request implements ServerRequestInterface{
 
     /**
      * {@inheritdoc}
+     * 
+     * @throws  \InvalidArgumentException
      */
     public function withoutAttribute($name){
         if(!is_scalar($name)){
