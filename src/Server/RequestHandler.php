@@ -47,7 +47,7 @@ class RequestHandler implements RequestHandlerInterface{
     public function __construct(ResponseInterface $response = null){
         $this->queue    = new \SplQueue();
         $this->classes  = [];
-        $this->response = $response;
+        $this->response = $response ?? new \Fratily\Http\Message\Response();
     }
     
     /**
