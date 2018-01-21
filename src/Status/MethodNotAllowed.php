@@ -19,4 +19,30 @@ namespace Fratily\Http\Status;
 class MethodNotAllowed extends HttpStatus{
     
     const STATUS_CODE   = 405;
+    
+    /**
+     * @var string[]
+     */
+    private $allowed;
+    
+    /**
+     * Constructor
+     * 
+     * @param   string[]    $allowed
+     * @param   string  $msg
+     * @param   int $code
+     */
+    public function __construct(array $allowed, string $msg = "", int $code = 0){
+        $this->allowed  = $allowed;
+        
+        parent::__construct($msg, $code);
+    }
+    
+    /**
+     * 
+     * @return  string[]
+     */
+    public function getAllowed(){
+        return $this->allowed;
+    }
 }
