@@ -28,8 +28,8 @@ class Emitter implements EmitterInterface{
      * @throws  \RuntimeException
      */
     public function emit(ResponseInterface $response, int $bufferSize = 4096){
-        if(ob_get_level() > 0){
-            throw new \RuntimeException();
+        while(ob_get_level() > 0){
+            ob_end_flush();
         }
         
         if(!headers_sent($file, $line)){
