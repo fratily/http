@@ -126,7 +126,7 @@ class Message implements MessageInterface{
      * {@inheritdoc}
      */
     public function getProtocolVersion(){
-        return $this->protVer;
+        return $this->version;
     }
 
     /**
