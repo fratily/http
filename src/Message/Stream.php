@@ -212,7 +212,7 @@ class Stream implements StreamInterface{
     public function seek($offset, $whence = SEEK_SET){
         if(!is_int($offset)){
             throw new \InvalidArgumentException();
-        }else if(in_array($whence, [SEEK_SET, SEEK_CUR, SEEK_END])){
+        }else if(!in_array($whence, [SEEK_SET, SEEK_CUR, SEEK_END])){
             throw new \InvalidArgumentException();
         }else if($this->resource === null){
             throw new Exception\UnusableException();
