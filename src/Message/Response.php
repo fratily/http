@@ -230,7 +230,7 @@ class Response extends Message implements ResponseInterface{
      * {@inheritoc}
      */
     public function withStatus($code, $reasonPhrase = ""){
-        if(!is_int($code) || isset(self::REASON_PHRASE[$code])){
+        if(!is_int($code) || !isset(self::REASON_PHRASE[$code])){
             throw new \InvalidArgumentException();
         }else if($reasonPhrase !== "" && self::REASON_PHRASE[$code] !== $reasonPhrase){
             throw new \InvalidArgumentException();
