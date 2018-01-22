@@ -209,7 +209,7 @@ class Response extends Message implements ResponseInterface{
         $this->code     = $code;
         $this->phrase   = self::REASON_PHRASE[$code] ?? null;
 
-        parent::__construct($headers, $body ?? Stream::fromPath("php://memory"), "w");
+        parent::__construct($headers, $body ?? Stream::fromPath("php://memory", "w"));
     }
 
     /**
