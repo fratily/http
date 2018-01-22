@@ -66,7 +66,7 @@ class RequestHandler implements RequestHandlerInterface{
             return $this->response;
         }
         
-        return $this->queue->dequeue()->process($request);
+        return $this->queue->dequeue()->process($request, $this);
     }
     
     /**
