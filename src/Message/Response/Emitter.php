@@ -37,7 +37,7 @@ class Emitter implements EmitterInterface{
             $this->emitHeaders($response);
         }
         
-        if($this->response->getBody()->getSize() > 0){
+        if($response->getBody()->getSize() > 0){
             $this->emitBody($response, $bufferSize);
         }
     }
