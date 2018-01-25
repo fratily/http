@@ -58,6 +58,8 @@ class RequestHandler implements RequestHandlerInterface{
      * @return  ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface{
+        $this->ran  = true;
+        
         if($this->queue->isEmpty()){
             if($this->response === null){
                 throw new \RuntimeException;
