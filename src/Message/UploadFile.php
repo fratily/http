@@ -67,6 +67,38 @@ class UploadFile implements UploadedFileInterface{
      */
     private $moved  = false;
     
+    public function fromName(string $name){
+        if(!array_key_exists($name, $_FILES)){
+            throw new \InvalidArgumentException();
+        }
+        
+        $file   = $_FILES[$name];
+        
+        if(is_array($file["error"])){
+            $return = [];
+            
+            foreach(array_keys($file["error"]) as $key){
+                $return[]   = new static(
+                    $file["error"][$key] ?? UPLOAD_ERR_EXTENSION,
+                    $file["name"][$key] ?? null,
+                    $file["type"][$key] ?? null,
+                    $file["tmp_name"][$key] ?? null,
+                    $file["size"][$key] ?? 0
+                );
+            }
+        }else{
+            $return = new static(
+                $file["error"] ?? UPLOAD_ERR_EXTENSION,
+                $file["name"] ?? null,
+                $file["type"] ?? null,
+                $file["tmp_name"] ?? null,
+                $file["size"] ?? 0
+            );
+        }
+        
+        return $return;
+    }
+    
     /**
      * Constructor
      * 
@@ -79,11 +111,11 @@ class UploadFile implements UploadedFileInterface{
      * @throws  \InvalidArgumentException
      */
     public function __construct(
-        string $temp,
-        string $name,
-        string $type,
-        int $size,
-        int $error
+        int $error,
+        string $name = null,
+        string $type = null,
+        string $temp = null,
+        int $size = 0
     ){
         if(!isset(self::ERROR_MAP[$error])){
             throw new \InvalidArgumentException();
