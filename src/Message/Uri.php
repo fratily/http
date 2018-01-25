@@ -220,8 +220,8 @@ class Uri implements UriInterface{
         return $this->scheme . ":"
             . ($authority !== "" ? "//{$authority}" : "")
             . $this->getPath()
-            . ($this->query !== null) ? "?" . $this->query : ""
-            . ($this->fragment !== null) ? "#" . $this->fragment : "";
+            . ($this->query !== null ? "?" . $this->query : "")
+            . ($this->fragment !== null ? "#" . $this->fragment : "");
     }
 
     /**
@@ -235,21 +235,19 @@ class Uri implements UriInterface{
      * {@inheritdoc}
      */
     public function getAuthority(){
-        if($this->host === null){
-            return "";
-        }
+        $userinfo   = $this->getUserInfo();
+        $host       = $this->getHost();
+        $port       = $this->getPort();
 
-        return
-            isset($this->userinfo) ? $this->userinfo . "@" : ""
-            . $this->host
-            . isset($this->port) ? ":" . $this->port : "";
+        return ($userinfo !== "" ? "{$userinfo}@" : "") . $host
+            . ($port !== null ? ":{$port}" : "");
     }
 
     /**
      * {@inheritdoc}
      */
     public function getUserInfo(){
-        return $this->userInfo ?? "";
+        return $this->userinfo ?? "";
     }
 
     /**
@@ -384,7 +382,7 @@ class Uri implements UriInterface{
             $return->userinfo   = $userinfo;
         }
 
-        return $userinfo;
+        return $return;
     }
 
     /**
