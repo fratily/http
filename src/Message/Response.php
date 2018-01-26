@@ -100,6 +100,8 @@ class Response extends Message implements ResponseInterface{
     /**
      * 
      * 
+     * @deprecated  これはファクトリーの仕事なのでいずれ分割する
+     * 
      * @param   int $code
      * @param   mixed[] $headers
      * 
@@ -111,6 +113,8 @@ class Response extends Message implements ResponseInterface{
     
     /**
      * 
+     * 
+     * @deprecated  これはファクトリーの仕事なのでいずれ分割する
      * 
      * @param   string  $body
      * @param   int $code
@@ -135,6 +139,8 @@ class Response extends Message implements ResponseInterface{
     /**
      * 
      * 
+     * @deprecated  これはファクトリーの仕事なのでいずれ分割する
+     * 
      * @param   string  $body
      * @param   int $code
      * @param   mixed[] $headers
@@ -157,6 +163,8 @@ class Response extends Message implements ResponseInterface{
     
     /**
      * 
+     * 
+     * @deprecated  これはファクトリーの仕事なのでいずれ分割する
      * 
      * @param   mixed[] $data
      * @param   int $code

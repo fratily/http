@@ -67,6 +67,15 @@ class UploadFile implements UploadedFileInterface{
      */
     private $moved  = false;
     
+    /**
+     * nameからUploadFileを作成する。
+     * 
+     * @param   string  $name
+     * 
+     * @return  static|static[]
+     * 
+     * @deprecated  これはファクトリーの仕事なのでいずれ分割する
+     */
     public function fromName(string $name){
         if(!array_key_exists($name, $_FILES)){
             throw new \InvalidArgumentException();
