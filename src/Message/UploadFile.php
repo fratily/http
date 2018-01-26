@@ -45,12 +45,12 @@ class UploadFile implements UploadedFileInterface{
     /**
      * @var string
      */
-    private $clientName;
+    private $clientFilename;
     
     /**
      * @var string
      */
-    private $clientType;
+    private $clientMediaType;
     
     /**
      * @var int
@@ -111,37 +111,37 @@ class UploadFile implements UploadedFileInterface{
     /**
      * Constructor
      * 
-     * @param   string  $temp
-     * @param   string  $name
-     * @param   string  $type
+     * @param   string  $file
+     * @param   string  $clientFilename
+     * @param   string  $clientMediaType
      * @param   int $size
      * @param   int $error
      * 
      * @throws  \InvalidArgumentException
      */
     public function __construct(
-        int $error,
-        string $name = null,
-        string $type = null,
-        string $temp = null,
-        int $size = 0
+        $file,
+        $size = null,
+        $error = UPLOAD_ERR_OK,
+        $clientFilename = null,
+        $clientMediaType = null
     ){
         if(!isset(self::ERROR_MAP[$error])){
             throw new \InvalidArgumentException();
         }
         
         if($error === UPLOAD_ERR_OK){
-            if(!is_file($temp)){
+            if(!is_file($file)){
                 throw new \InvalidArgumentException();
             }
             
-            $this->temp = $temp;
+            $this->temp = $file;
         }
         
-        $this->clientName   = $name;
-        $this->clientType   = $type;
-        $this->size         = $size;
-        $this->error        = $error;
+        $this->size             = $size;
+        $this->error            = $error;
+        $this->clientFilename   = $clientFilename;
+        $this->clientMediaType  = $clientMediaType;
     }
     
     /**
@@ -206,13 +206,13 @@ class UploadFile implements UploadedFileInterface{
      * {@inheritdoc}
      */
     public function getClientFilename(){
-        return $this->clientName;
+        return $this->clientFilename;
     }
 
     /**
      * {@inheritdoc}
      */
     public function getClientMediaType(){
-        return $this->clientType;
+        return $this->clientMediaType;
     }
 }
