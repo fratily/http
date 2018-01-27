@@ -29,44 +29,44 @@ class Stream implements StreamInterface{
 
     /**
      * Create new instance for stdin stream
-     * 
+     *
      * @return  Stream\StdinStream
      */
     public static function stdin(){
         return new Stream\StdinStream();
     }
-    
+
     /**
      * Create new instance for stdout stream
-     * 
+     *
      * @return  static
      */
     public static function stdout(){
         return new static(STDOUT);
     }
-    
+
     /**
      * Create new instance for memory stream
-     * 
+     *
      * @param   string  $mode
-     * 
+     *
      * @return  static
      */
     public static function memory(string $mode = "wb+"){
         return static::fromPath("php://memory", $mode);
     }
-    
+
     /**
      * Create new instance for temp stream
-     * 
+     *
      * @param   string  $mode
-     * 
+     *
      * @return  static
      */
     public static function temp(string $mode = "wb+"){
         return static::fromPath("php://temp", $mode);
     }
-    
+
     /**
      * Create new instance from file path
      *
@@ -94,13 +94,12 @@ class Stream implements StreamInterface{
      * @param   resource    $resource
      *
      * @throws  \InvalidArgumentException
-     * @throws  Exception\InvalidStreamReferencedException
      */
     public function __construct($resource){
         if(!is_resource($resource)){
             throw new \InvalidArgumentException();
         }else if(get_resource_type($resource) !== "stream"){
-            throw new Exception\InvalidStreamReferencedException();
+            throw new \InvalidArgumentException();
         }
 
         $this->resource = $resource;
@@ -162,17 +161,17 @@ class Stream implements StreamInterface{
             return null;
         }
 
-        return fstat($this->resource)['size'] ?? null;
+        return fstat($this->resource)["size"] ?? null;
     }
 
     /**
      * {@inheritdoc}
      *
-     * @throws  Exception\UnusableException
+     * @throws  Exception\StreamException
      */
     public function tell(){
         if($this->resource === null){
-            throw new Exception\UnusableException();
+            throw Exception\StreamException::unavailable();
         }else if(($point = ftell($this->resource)) === false){
             throw new \RuntimeException;
         }
@@ -206,8 +205,7 @@ class Stream implements StreamInterface{
      * {@inheritdoc}
      *
      * @throws  \InvalidArgumentException
-     * @throws  Exception\UnusableException
-     * @throws  Exception\UnseekableException
+     * @throws  Exception\StreamException
      */
     public function seek($offset, $whence = SEEK_SET){
         if(!is_int($offset)){
@@ -215,9 +213,9 @@ class Stream implements StreamInterface{
         }else if(!in_array($whence, [SEEK_SET, SEEK_CUR, SEEK_END])){
             throw new \InvalidArgumentException();
         }else if($this->resource === null){
-            throw new Exception\UnusableException();
+            throw Exception\StreamException::unavailable();
         }else if(!$this->isSeekable()){
-            throw new Exception\UnseekableException();
+            throw Exception\StreamException::unseekable();
         }
 
         if(fseek($this->resource, $offset, $whence) !== 0){
@@ -260,16 +258,15 @@ class Stream implements StreamInterface{
      * {@inheritdoc}
      *
      * @throws  \InvalidArgumentException
-     * @throws  Exception\UnusableException
-     * @throws  Exception\UnwritableException
+     * @throws  Exception\StreamException
      */
     public function write($string){
         if(!is_scalar($string)){
             throw new \InvalidArgumentException();
         }else if($this->resource === null){
-            throw new Exception\UnusableException();
+            throw Exception\StreamException::unavailable();
         }else if(!$this->isWritable()){
-            throw new Exception\UnwritableException();
+            throw Exception\StreamException::unwritable();
         }
 
         $bytes  = fwrite($this->resource, (string)$string);
@@ -301,16 +298,15 @@ class Stream implements StreamInterface{
      * {@inheritdoc}
      *
      * @throws  \InvalidArgumentException
-     * @throws  Exception\UnusableException
-     * @throws  Exception\UnreadableException
+     * @throws  Exception\StreamException
      */
     public function read($length){
         if(!is_int($length)){
             throw new \InvalidArgumentException();
         }else if($this->resource === null){
-            throw new Exception\UnusableException();
+            throw Exception\StreamException::unavailable();
         }else if(!$this->isReadable()){
-            throw new Exception\UnreadableException();
+            throw Exception\StreamException::unreadable();
         }
 
         $contents   = fread($this->resource, $length);
@@ -325,14 +321,13 @@ class Stream implements StreamInterface{
     /**
      * {@inheritdoc}
      *
-     * @throws  Exception\UnusableException
-     * @throws  Exception\UnreadableException
+     * @throws  Exception\StreamException
      */
     public function getContents(){
         if($this->resource === null){
-            throw new Exception\UnusableException();
+            throw Exception\StreamException::unavailable();
         }else if(!$this->isReadable()){
-            throw new Exception\UnreadableException();
+            throw Exception\StreamException::unreadable();
         }
 
         $contents   = stream_get_contents($this->resource);
@@ -348,13 +343,13 @@ class Stream implements StreamInterface{
      * {@inheritdoc}
      *
      * @throws  \InvalidArgumentException
-     * @throws  Exception\UnusableException
+     * @throws  Exception\StreamException
      */
     public function getMetadata($key = null){
         if($key !== null && !is_string($key)){
             throw new \InvalidArgumentException();
         }else if($this->resource === null){
-            throw new Exception\UnusableException();
+            throw Exception\StreamException::unavailable();
         }
 
         $meta   = stream_get_meta_data($this->resource);
