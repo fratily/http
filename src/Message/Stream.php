@@ -26,7 +26,7 @@ class Stream implements StreamInterface{
      *          ただし、型はきちんと守らせる必要がある
      */
     private $resource;
-    
+
     /**
      * Constructor
      *
@@ -167,8 +167,7 @@ class Stream implements StreamInterface{
     /**
      * {@inheritdoc}
      *
-     * @throws  Exception\UnusableException
-     * @throws  Exception\UnseekableException
+     * @throws  Exception\StreamException
      */
     public function rewind(){
         return $this->seek(0, SEEK_SET);
