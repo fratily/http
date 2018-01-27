@@ -17,10 +17,10 @@ use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * 
+ *
  */
 class UploadFile implements UploadedFileInterface{
-    
+
     const ERROR_MAP = [
         UPLOAD_ERR_OK         => true,
         UPLOAD_ERR_INI_SIZE   => false,
@@ -31,61 +31,61 @@ class UploadFile implements UploadedFileInterface{
         UPLOAD_ERR_CANT_WRITE => false,
         UPLOAD_ERR_EXTENSION  => false,
     ];
-    
+
     /**
      * @var string
      */
     private $temp;
-    
+
     /**
      * @var StreamInterface|null
      */
     private $stream;
-    
+
     /**
      * @var string
      */
     private $clientFilename;
-    
+
     /**
      * @var string
      */
     private $clientMediaType;
-    
+
     /**
      * @var int
      */
     private $size;
-    
+
     /**
      * @var mixed
      */
     private $error;
-    
+
     /**
      * @var bool
      */
     private $moved  = false;
-    
+
     /**
      * nameからUploadFileを作成する。
-     * 
+     *
      * @param   string  $name
-     * 
+     *
      * @return  static|static[]
-     * 
+     *
      * @deprecated  これはファクトリーの仕事なのでいずれ分割する
      */
     public function fromName(string $name){
         if(!array_key_exists($name, $_FILES)){
             throw new \InvalidArgumentException();
         }
-        
+
         $file   = $_FILES[$name];
-        
+
         if(is_array($file["error"])){
             $return = [];
-            
+
             foreach(array_keys($file["error"]) as $key){
                 $return[]   = new static(
                     $file["error"][$key] ?? UPLOAD_ERR_EXTENSION,
@@ -104,19 +104,19 @@ class UploadFile implements UploadedFileInterface{
                 $file["size"] ?? 0
             );
         }
-        
+
         return $return;
     }
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param   string  $file
-     * @param   string  $clientFilename
-     * @param   string  $clientMediaType
      * @param   int $size
      * @param   int $error
-     * 
+     * @param   string  $clientFilename
+     * @param   string  $clientMediaType
+     *
      * @throws  \InvalidArgumentException
      */
     public function __construct(
@@ -129,21 +129,21 @@ class UploadFile implements UploadedFileInterface{
         if(!isset(self::ERROR_MAP[$error])){
             throw new \InvalidArgumentException();
         }
-        
+
         if($error === UPLOAD_ERR_OK){
             if(!is_file($file)){
                 throw new \InvalidArgumentException();
             }
-            
+
             $this->temp = $file;
         }
-        
+
         $this->size             = $size;
         $this->error            = $error;
         $this->clientFilename   = $clientFilename;
         $this->clientMediaType  = $clientMediaType;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -154,10 +154,10 @@ class UploadFile implements UploadedFileInterface{
             }else if($this->moved){
                 throw new \RuntimeException;
             }
-            
+
             $this->stream   = Stream::fromPath($this->temp);
         }
-        
+
         return $this->stream;
     }
 
@@ -172,19 +172,19 @@ class UploadFile implements UploadedFileInterface{
         }else if($this->moved){
             throw new \RuntimeException;
         }
-        
+
         $dir    = dirname($targetPath);
-        
+
         if(!is_dir($dir)){
             throw new \RuntimeException;
         }else if(!is_writable($dir)){
             throw new \RuntimeException;
         }
-        
+
         if(move_uploaded_file($this->temp, $targetPath) === false){
             throw new \RuntimeException;
         }
-        
+
         $this->moved    = true;
     }
 
