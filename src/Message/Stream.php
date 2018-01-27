@@ -26,68 +26,7 @@ class Stream implements StreamInterface{
      *          ただし、型はきちんと守らせる必要がある
      */
     private $resource;
-
-    /**
-     * Create new instance for stdin stream
-     *
-     * @return  Stream\StdinStream
-     */
-    public static function stdin(){
-        return new Stream\StdinStream();
-    }
-
-    /**
-     * Create new instance for stdout stream
-     *
-     * @return  static
-     */
-    public static function stdout(){
-        return new static(STDOUT);
-    }
-
-    /**
-     * Create new instance for memory stream
-     *
-     * @param   string  $mode
-     *
-     * @return  static
-     */
-    public static function memory(string $mode = "wb+"){
-        return static::fromPath("php://memory", $mode);
-    }
-
-    /**
-     * Create new instance for temp stream
-     *
-     * @param   string  $mode
-     *
-     * @return  static
-     */
-    public static function temp(string $mode = "wb+"){
-        return static::fromPath("php://temp", $mode);
-    }
-
-    /**
-     * Create new instance from file path
-     *
-     * @param   string  $path
-     * @param   string  $mode
-     *
-     * @return  static
-     *
-     * @throws  Exception\InvalidStreamReferencedException
-     */
-    public static function fromPath(string $path, string $mode = "r"){
-        $resource   = fopen($path, $mode);
-
-        if($resource === false){
-            //  TODO: fopenのエラーメッセージを受け取る方法を調べる
-            throw new Exception\InvalidStreamReferencedException();
-        }
-
-        return new static($resource);
-    }
-
+    
     /**
      * Constructor
      *
