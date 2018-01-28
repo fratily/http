@@ -50,57 +50,6 @@ class StreamFactory implements StreamFactoryInterface{
     }
 
     /**
-     * PHPへの入力(php://input)のストリームを作成する
-     *
-     * @return  StreamInterface
-     */
-    public function createInput(){
-        return new Stream\InputStream();
-    }
-
-    /**
-     * PHPの出力(php://input)のストリームを作成する
-     *
-     * @return  StreamInterface
-     */
-    public function createOutput(){
-        return new Stream\OutputStream();
-    }
-
-    /**
-     * 標準エラー出力のストリームを作成する
-     *
-     * @return  StreamInterface
-     */
-    public function createStderr(){
-        return new Stream\StderrStream();
-    }
-
-    /**
-     * 標準出力のストリームを作成する
-     *
-     * @return  StreamInterface
-     */
-    public function createStdout(){
-        return new Stream\StdoutStream();
-    }
-
-    /**
-     * メモリ上で操作する新しいストリームを作成する
-     *
-     * @param   string  $mode
-     *
-     * @return  StreamInterface
-     */
-    public function createMemory(string $mode = "wb+"){
-        if(($resource = fopen("php://memory", $mode)) === false){
-            throw new \RuntimeException;
-        }
-
-        return new $this->createStreamFromResource($resource);
-    }
-
-    /**
      * {@inheritdoc}
      *
      * @throws  \InvalidArgumentException
