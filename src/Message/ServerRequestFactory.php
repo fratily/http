@@ -35,7 +35,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         
         $uri        = is_string($uri) ? new Uri($uri) : $uri;
         $headers    = self::getRequestHeaders($_SERVER);
-        $files      = self::getUploadFiles($_FILES);
+        $files      = self::getUploadedFiles($_FILES);
         
     }
 
@@ -83,7 +83,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
      * 
      * @throws  \InvalidArgumentException
      */
-    public static function getUploadFiles(
+    public static function getUploadedFiles(
         array $files = null,
         UploadedFileFactoryInterface $factory = null
     ){
@@ -130,7 +130,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
             );
         }
         
-        return new UploadFile(
+        return new UploadedFile(
             $value["tmp_name"],
             $value["size"],
             $value["error"],

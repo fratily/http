@@ -19,7 +19,7 @@ use Psr\Http\Message\StreamInterface;
 /**
  *
  */
-class UploadFile implements UploadedFileInterface{
+class UploadedFile implements UploadedFileInterface{
 
     /**
      * @var string
@@ -74,7 +74,7 @@ class UploadFile implements UploadedFileInterface{
         string $clientFilename = null,
         string $clientMediaType = null
     ){
-        if(!isset(Exception\UploadFileException::ERROR_MAP[$error])){
+        if(!isset(Exception\UploadedFileException::ERROR_MAP[$error])){
             throw new \InvalidArgumentException();
         }
 
@@ -99,13 +99,13 @@ class UploadFile implements UploadedFileInterface{
     /**
      * {@inheritdoc}
      *
-     * @throws  Exception\UploadFileException
+     * @throws  Exception\UploadedFileException
      */
     public function getStream(){
         if($this->error !== UPLOAD_ERR_OK){
-            throw Exception\UploadFileException::uploadError($this->error);
+            throw Exception\UploadedFileException::uploadError($this->error);
         }else if($this->moved){
-            throw Exception\UploadFileException::moved();
+            throw Exception\UploadedFileException::moved();
         }
 
         if($this->stream === null){
@@ -127,9 +127,9 @@ class UploadFile implements UploadedFileInterface{
         if(!is_string($targetPath) || $targetPath === ""){
             throw new \InvalidArgumentException();
         }else if($this->error !== UPLOAD_ERR_OK){
-            throw Exception\UploadFileException::uploadError($this->error);
+            throw Exception\UploadedFileException::uploadError($this->error);
         }else if($this->moved){
-            throw Exception\UploadFileException::moved();
+            throw Exception\UploadedFileException::moved();
         }
 
         if($this->file !== null){

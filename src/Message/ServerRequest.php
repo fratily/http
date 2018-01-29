@@ -29,7 +29,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
     private $serverParams   = [];
 
     /**
-     * @var UploadFileInterface[]
+     * @var UploadedFileInterface[]
      */
     private $uploadedFiles  = [];
     
@@ -54,19 +54,19 @@ class ServerRequest extends Request implements ServerRequestInterface{
     private $attributes     = [];
     
     /**
-     * UploadFiles配列のバリデーションを行う
+     * UploadedFiles配列のバリデーションを行う
      * 
-     * @param   mixed   $uploadFiles
+     * @param   mixed   $uploadedFiles
      * @return  bool
      */
-    private static function validUploadFiles($uploadFiles){
-        if(!is_array($uploadFiles)){
+    private static function validUploadedFiles($uploadedFiles){
+        if(!is_array($uploadedFiles)){
             return false;
         }
         
-        foreach($uploadFiles as $file){
+        foreach($uploadedFiles as $file){
             if(is_array($file)){
-                if(self::validUploadFiles($file)){
+                if(self::validUploadedFiles($file)){
                     return false;
                 }
             }else if(!($file instanceof UploadedFileInterface)){
@@ -84,7 +84,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
      * @param   mixed[] $headers
      * @param   StreamInterface|null    $body
      * @param   mixed[] $serverParams
-     * @param   UploadFileInterface[]   $uploadedFiles
+     * @param   UploadedFileInterface[] $uploadedFiles
      * @param   mixed[] $cookieParams
      * @param   mixed[] $queryParams
      * @param   mixed[]|object|null $parsedBody
@@ -106,7 +106,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
     ){
         parent::__construct($method, $uri, $headers, $body, $version);
         
-        if(($uploadedFiles = self::validUploadFiles($uploadedFiles)) === false){
+        if(($uploadedFiles = self::validUploadedFiles($uploadedFiles)) === false){
             throw new \InvalidArgumentException();
         }else if($parsedBody !== null && !is_array($parsedBody) && !is_object($parsedBody)){
             throw new \InvalidArgumentException();
@@ -137,7 +137,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
      * {@inheritdoc}
      */
     public function withUploadedFiles(array $uploadedFiles){
-        if(!self::validUploadFiles($uploadedFiles)){
+        if(!self::validUploadedFiles($uploadedFiles)){
             throw new \InvalidArgumentException();
         }
         

@@ -18,7 +18,7 @@ use Interop\Http\Factory\UploadedFileFactoryInterface;
 /**
  *
  */
-class UploadFileFactory implements UploadedFileFactoryInterface{
+class UploadedFileFactory implements UploadedFileFactoryInterface{
 
     /**
      * {@inheritdoc}
@@ -30,6 +30,6 @@ class UploadFileFactory implements UploadedFileFactoryInterface{
         $clientFilename = null,
         $clientMediaType = null
     ){
-        return new UploadFile($file, $size, $error, $clientFilename, $clientMediaType);
+        return new UploadedFile($file, $size, $error, $clientFilename, $clientMediaType);
     }
 }

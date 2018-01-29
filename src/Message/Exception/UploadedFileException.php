@@ -13,7 +13,7 @@
  */
 namespace Fratily\Http\Message\Exception;
 
-class UploadFileException extends \RuntimeException{
+class UploadedFileException extends \RuntimeException{
 
     const ERROR_MAP = [
         UPLOAD_ERR_OK           => "",
