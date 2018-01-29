@@ -65,7 +65,7 @@ class Request extends Message implements RequestInterface{
 
         parent::__construct(
             $headers,
-            $body ?? Stream::fromPath("php://memory"),
+            $body ?? new Stream\MemoryStream(),
             $version
         );
 
