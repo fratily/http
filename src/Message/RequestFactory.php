@@ -21,7 +21,6 @@ use Psr\Http\Message\UriInterface;
  */
 class RequestFactory implements RequestFactoryInterface{
 
-
     /**
      * {@inheritdoc}
      *
@@ -38,6 +37,6 @@ class RequestFactory implements RequestFactoryInterface{
             $uri    = new Uri($uri);
         }
 
-        return new Request($method, $uri, $uri, $body, $version);
+        return new Request($method, $uri);
     }
 }
