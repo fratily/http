@@ -102,9 +102,8 @@ class Request extends Message implements RequestInterface{
         if($this->uri->getPath() === $path && $this->uri->getQuery() === $query){
             $return = $this;
         }else{
-            $return = clone $this;
-            $uri    = $this->getUri()->withPath($path)->withQuery($query);
-            $return->withUri($uri);
+            $return         = clone $this;
+            $return->uri    = $this->getUri()->withPath($path)->withQuery($query);
         }
 
         return $return;
@@ -130,11 +129,11 @@ class Request extends Message implements RequestInterface{
         if($this->method === $method){
             $return = $this;
         }else{
-            $return = clone $this;
+            $return         = clone $this;
             $return->method = $method;
         }
 
-        return $this;
+        return $return;
     }
 
     /**
@@ -167,7 +166,7 @@ class Request extends Message implements RequestInterface{
                 $host   = "{$host}:{$port}";
             }
 
-            $return = $return->withoutHeader("host")->withHeader("Host", $host);
+            $return = $return->withHeader("Host", $host);
         }
 
         return $return;
