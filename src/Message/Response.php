@@ -43,14 +43,14 @@ class Response extends Message implements ResponseInterface{
         array $headers = [],
         StreamInterface $body = null
     ){
-        if(!isset(HttpStatus::REASON_PHRASE[$code])){
+        if(!isset(HttpStatus::STATUS_PHRASES[$code])){
             throw new \InvalidArgumentException();
         }if($body !== null && (!$body->isWritable() || !$body->isReadable())){
             throw new \InvalidArgumentException();
         }
 
         $this->code     = $code;
-        $this->phrase   = HttpStatus::REASON_PHRASE[$code] ?? null;
+        $this->phrase   = HttpStatus::STATUS_PHRASES[$code] ?? null;
 
         parent::__construct($headers, $body ?? new Stream\MemoryStream());
     }
@@ -73,9 +73,9 @@ class Response extends Message implements ResponseInterface{
      * {@inheritoc}
      */
     public function withStatus($code, $reasonPhrase = ""){
-        if(!is_int($code) || !isset(HttpStatus::REASON_PHRASE[$code])){
+        if(!is_int($code) || !isset(HttpStatus::STATUS_PHRASES[$code])){
             throw new \InvalidArgumentException();
-        }else if($reasonPhrase !== "" && HttpStatus::REASON_PHRASE[$code] !== $reasonPhrase){
+        }else if($reasonPhrase !== "" && HttpStatus::STATUS_PHRASES[$code] !== $reasonPhrase){
             throw new \InvalidArgumentException();
         }
 
