@@ -34,9 +34,28 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         }
         
         $uri        = is_string($uri) ? new Uri($uri) : $uri;
-        $headers    = self::getRequestHeaders($_SERVER);
-        $files      = self::getUploadedFiles($_FILES);
+        $body       = new Stream\InputStream();
+        $parsedBody = null;
         
+        if(in_array($method, ["POST", "PUT", "DELETE"])
+            && ($_SERVER["CONTENT_TYPE"] ?? "") !== "application/x-www-form-urlencoded"
+        ){
+            $parsedBody = mb_parse_str($body->getContents());
+            $body->rewind();
+        }
+        
+        return new ServerRequest(
+            $method,
+            $uri,
+            self::getRequestHeaders($_SERVER),
+            $body,
+            $_SERVER,
+            self::getUploadedFiles($_FILES),
+            $_COOKIE,
+            $_GET,
+            $parsedBody,
+            self::getProtocolVersion($_SERVER)
+        );
     }
 
     /**
@@ -50,7 +69,30 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
      *  If no valid method or URI can be determined.
      */
     public function createServerRequestFromArray(array $server){
+        $method     = $server["REQUEST_METHOD"] ?? "GET";
+        $uri        = self::resolveUri($server);
+        $body       = new Stream\InputStream();
+        $parsedBody = null;
         
+        if(in_array($method, ["POST", "PUT", "DELETE"])
+            && ($server["CONTENT_TYPE"] ?? "") === "application/x-www-form-urlencoded"
+        ){
+            $parsedBody = mb_parse_str($body->getContents());
+            $body->rewind();
+        }
+        
+        return new ServerRequest(
+            $method,
+            $uri,
+            self::getRequestHeaders($server),
+            $body,
+            $server,
+            self::getUploadedFiles($_FILES),
+            $_COOKIE,
+            $_GET,
+            $parsedBody,
+            self::getProtocolVersion($server)
+        );
     }
     
     public static function getRequestHeaders(array $server = null){
@@ -94,9 +136,9 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
                 $return[$name]  = $value;
             }else if(is_array($value)){
                 if(isset($value["error"]) && isset($value["tmp_name"])){
-                    $return[$name]  = "";
+                    $return[$name]  = static::createUplodFile($value, $factory);
                 }else{
-                    $return[$name]  = "";
+                    $return[$name]  = static::getUploadedFiles($value, $factory);
                 }
             }else{
                 throw new \InvalidArgumentException();
@@ -104,6 +146,26 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         }
         
         return $return;
+    }
+    
+    public static function getProtocolVersion($server = null){
+        $server = $server ?? $_SERVER;
+        
+        if(!isset($server["SERVER_PROTOCOL"])){
+            return "1.1";
+        }else if((bool)preg_match(
+                "`\AHTTP/(?<ver>[1-9][0-9]*(\.[1-9][0-9]*)?)\z`",
+                $server["SERVER_PROTOCOL"], $m
+            )
+        ){
+            throw new \InvalidArgumentException();
+        }
+        
+        return $m["ver"];
+    }
+    
+    private static function resolveUri(){
+        
     }
     
     /**
