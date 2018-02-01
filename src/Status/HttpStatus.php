@@ -19,6 +19,28 @@ namespace Fratily\Http\Status;
 class HttpStatus extends \Exception{
 
     const STATUS_PHRASES    = [
+        100 => "Continue",
+        101 => "Switching Protocols",
+        102 => "Processing",
+        103 => "Early Hints",
+        200 => "OK",
+        201 => "Created",
+        202 => "Accepted",
+        203 => "Non-Authoritative Information",
+        204 => "No Content",
+        205 => "Reset Content",
+        206 => "Partial Content",
+        207 => "Multi-Status",
+        208 => "Already Reported",
+        226 => "IM Used",
+        300 => "Multiple Choices",
+        301 => "Moved Permanently",
+        302 => "Found",
+        303 => "See Other",
+        304 => "Not Modified",
+        305 => "Use Proxy",
+        307 => "Temporary Redirect",
+        308 => "Permanent Redirect",
         400 => "Bad Request",
         401 => "Unauthorized",
         402 => "Payment Required",
@@ -77,8 +99,7 @@ class HttpStatus extends \Exception{
      * @return  string
      */
     public function __toString(){
-        return static::STATUS_CODE . " " .
-            (self::STATUS_PHRASES[static::STATUS_CODE] ?? "Undefined");
+        return $this->getStatus() . " " . $this->getPhrase();
     }
 
     /**
@@ -86,7 +107,7 @@ class HttpStatus extends \Exception{
      * @return  int
      */
     public function getStatus(){
-        return static::STATUS_CODE;
+        return (400 <= static::STATUS_CODE ? static::STATUS_CODE : self::STATUS_CODE);
     }
 
     /**
@@ -94,6 +115,6 @@ class HttpStatus extends \Exception{
      * @return  string
      */
     public function getPhrase(){
-        return self::STATUS_PHRASES[static::STATUS_CODE] ?? "Undefined";
+        return self::STATUS_PHRASES[$this->getStatus()] ?? "Undefined";
     }
 }
