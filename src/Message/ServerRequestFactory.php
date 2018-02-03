@@ -164,8 +164,12 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         return $m["ver"];
     }
     
-    private static function resolveUri(){
-        
+    private static function resolveUri(array $server){
+        if(isset($server["HTTPS"]) && $server["HTTPS"] !== "off"){
+            $scheme = "https";
+        }else{
+            $scheme = "http";
+        }
     }
     
     /**
