@@ -52,6 +52,17 @@ class RequestHandler implements RequestHandlerInterface{
     }
     
     /**
+     * レスポンスインスタンスをセット
+     * 
+     * @param   ResponseInterface   $response
+     * 
+     * @return  void
+     */
+    public function setResponse(ResponseInterface $response){
+        $this->response = $response;
+    }
+    
+    /**
      * {@inheritdoc}
      * 
      * @param   ServerRequestInterface  $request
