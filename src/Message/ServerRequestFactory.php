@@ -70,7 +70,6 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
      */
     public function createServerRequestFromArray(array $server){
         $method     = $server["REQUEST_METHOD"] ?? "GET";
-        $uri        = self::resolveUri($server);
         $body       = new Stream\InputStream();
         $parsedBody = null;
         
@@ -83,7 +82,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         
         return new ServerRequest(
             $method,
-            $uri,
+            (new UriFactory())->createFromServer($server),
             self::getRequestHeaders($server),
             $body,
             $server,
@@ -162,14 +161,6 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         }
         
         return $m["ver"];
-    }
-    
-    private static function resolveUri(array $server){
-        if(isset($server["HTTPS"]) && $server["HTTPS"] !== "off"){
-            $scheme = "https";
-        }else{
-            $scheme = "http";
-        }
     }
     
     /**

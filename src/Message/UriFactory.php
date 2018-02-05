@@ -30,4 +30,8 @@ class UriFactory implements UriFactoryInterface{
 
         return new Uri($uri);
     }
+    
+    public function createFromServer(array $server = null){
+        $server = $server ?? $_SERVER;
+    }
 }
