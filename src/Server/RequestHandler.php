@@ -227,7 +227,7 @@ class RequestHandler implements RequestHandlerInterface{
      * 
      * @return  bool
      */
-    private function hasClass(string $name){
+    public function hasClass(string $name){
         return $this->classes[$name] ?? false;
     }
 }
