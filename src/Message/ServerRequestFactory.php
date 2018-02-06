@@ -42,6 +42,10 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         ){
             $parsedBody = mb_parse_str($body->getContents());
             $body->rewind();
+            
+            if($parsedBody === false){
+                $parsedBody = null;
+            }
         }
         
         return new ServerRequest(
