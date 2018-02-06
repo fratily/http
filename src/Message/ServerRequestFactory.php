@@ -152,7 +152,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         
         if(!isset($server["SERVER_PROTOCOL"])){
             return "1.1";
-        }else if((bool)preg_match(
+        }else if(!(bool)preg_match(
                 "`\AHTTP/(?<ver>[1-9][0-9]*(\.[1-9][0-9]*)?)\z`",
                 $server["SERVER_PROTOCOL"], $m
             )
