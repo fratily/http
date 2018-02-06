@@ -98,7 +98,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         );
     }
     
-    public static function getRequestHeaders(array $server = null){
+    private static function getRequestHeaders(array $server = null){
         $return = [];
 
         foreach(($server ?? $_SERVER) as $key => $value){
@@ -128,7 +128,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
      * 
      * @throws  \InvalidArgumentException
      */
-    public static function getUploadedFiles(
+    private static function getUploadedFiles(
         array $files = null,
         UploadedFileFactoryInterface $factory = null
     ){
@@ -151,7 +151,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         return $return;
     }
     
-    public static function getProtocolVersion($server = null){
+    private static function getProtocolVersion($server = null){
         $server = $server ?? $_SERVER;
         
         if(!isset($server["SERVER_PROTOCOL"])){
