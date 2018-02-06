@@ -40,12 +40,10 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         if(in_array($method, ["POST", "PUT", "DELETE"])
             && ($_SERVER["CONTENT_TYPE"] ?? "") !== "application/x-www-form-urlencoded"
         ){
-            $parsedBody = mb_parse_str($body->getContents());
-            $body->rewind();
+            $contents   = $body->getContents();
             
-            if($parsedBody === false){
-                $parsedBody = null;
-            }
+            $body->rewind();
+            mb_parse_str($contents, $parsedBody);
         }
         
         return new ServerRequest(
@@ -80,8 +78,10 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
         if(in_array($method, ["POST", "PUT", "DELETE"])
             && ($server["CONTENT_TYPE"] ?? "") === "application/x-www-form-urlencoded"
         ){
-            $parsedBody = mb_parse_str($body->getContents());
+            $contents   = $body->getContents();
+            
             $body->rewind();
+            mb_parse_str($contents, $parsedBody);
         }
         
         return new ServerRequest(
