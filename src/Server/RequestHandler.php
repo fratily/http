@@ -123,7 +123,7 @@ class RequestHandler implements RequestHandlerInterface{
     }
 
     /**
-     * 指定したミドルウェアの前にミドルウェアを挿入する
+     * 指定したミドルウェアクラスの前にミドルウェアを挿入する
      *
      * @param   string  $name
      * @param   MiddlewareInterface $middleware
@@ -160,7 +160,7 @@ class RequestHandler implements RequestHandlerInterface{
     }
 
     /**
-     * 指定したミドルウェアの後にミドルウェアを挿入する
+     * 指定したミドルウェアクラスの後にミドルウェアを挿入する
      *
      * @param   string $name
      * @param   MiddlewareInterface $middleware
