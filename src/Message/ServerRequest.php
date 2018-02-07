@@ -77,16 +77,41 @@ class ServerRequest extends Request implements ServerRequestInterface{
     }
     
     /**
+     * サーバーパラメータからHTTPリクエストヘッダーを抽出する
+     * 
+     * @param   mixed[] $server
+     * 
+     * @return  mixed[]
+     */
+    private static function extractionHeaders(array $server){
+        $return = [];
+
+        foreach($server as $key => $value){
+            if((bool)preg_match("/\AHTTP_[0-9A-Z!#$%&'*+\-.^_`|~]+\z/", $key)){
+                $key    = substr($key, 5);
+
+                if(strlen($key) > 0){
+                    $key    = implode(
+                        "-", array_map("ucfirst", explode("_", strtolower($key)))
+                    );
+
+                    $return[$key]   = $value;
+                }
+            }
+        }
+
+        return $return;
+    }
+    
+    /**
+     * Constructor
      * 
      * @param   string  $method
      * @param   UriInterface $uri
-     * @param   mixed[] $headers
-     * @param   StreamInterface|null    $body
      * @param   mixed[] $serverParams
      * @param   UploadedFileInterface[] $uploadedFiles
      * @param   mixed[] $cookieParams
      * @param   mixed[] $queryParams
-     * @param   mixed[]|object|null $parsedBody
      * @param   string  $version
      * 
      * @throws  \InvalidArgumentException
@@ -94,20 +119,21 @@ class ServerRequest extends Request implements ServerRequestInterface{
     public function __construct(
         string $method,
         UriInterface $uri,
-        array $headers = [],
-        StreamInterface $body = null,
         array $serverParams = [],
         array $uploadedFiles = [],
         array $cookieParams = [],
         array $queryParams = [],
-        $parsedBody = null,
         string $version = "1.1"
     ){
-        parent::__construct($method, $uri, $headers, $body ?? new Stream\InputStream(), $version);
+        parent::__construct(
+            $method,
+            $uri,
+            self::extractionHeaders($serverParams),
+            ($body = new Stream\InputStream()),
+            $version
+        );
         
         if(($uploadedFiles = self::validUploadedFiles($uploadedFiles)) === false){
-            throw new \InvalidArgumentException();
-        }else if($parsedBody !== null && !is_array($parsedBody) && !is_object($parsedBody)){
             throw new \InvalidArgumentException();
         }
         
@@ -115,7 +141,16 @@ class ServerRequest extends Request implements ServerRequestInterface{
         $this->uploadedFiles    = $uploadedFiles;
         $this->cookieParams     = $cookieParams;
         $this->queryParams      = $queryParams;
-        $this->parsedBody       = $parsedBody;
+        
+        if(in_array($method, ["POST", "PUT", "PATCH"])
+            && ($server["CONTENT_TYPE"] ?? "") === "application/x-www-form-urlencoded"
+        ){
+            $body->rewind();
+            $content    = $body->getContents();
+            $body->rewind();
+            
+            mb_parse_str($content, $this->parsedBody);
+        }
     }
 
     /**

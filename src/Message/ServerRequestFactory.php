@@ -33,29 +33,15 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
             throw new \InvalidArgumentException();
         }
         
-        $uri        = is_string($uri) ? new Uri($uri) : $uri;
-        $body       = new Stream\InputStream();
-        $parsedBody = null;
-        
-        if(in_array($method, ["POST", "PUT", "DELETE"])
-            && ($_SERVER["CONTENT_TYPE"] ?? "") !== "application/x-www-form-urlencoded"
-        ){
-            $contents   = $body->getContents();
-            
-            $body->rewind();
-            mb_parse_str($contents, $parsedBody);
-        }
+        $uri    = is_string($uri) ? new Uri($uri) : $uri;
         
         return new ServerRequest(
             $method,
             $uri,
-            self::getRequestHeaders($_SERVER),
-            $body,
             $_SERVER,
             self::getUploadedFiles($_FILES),
             $_COOKIE,
             $_GET,
-            $parsedBody,
             self::getProtocolVersion($_SERVER)
         );
     }
@@ -72,50 +58,16 @@ class ServerRequestFactory implements ServerRequestFactoryInterface{
      */
     public function createServerRequestFromArray(array $server){
         $method     = $server["REQUEST_METHOD"] ?? "GET";
-        $body       = new Stream\InputStream();
-        $parsedBody = null;
-        
-        if(in_array($method, ["POST", "PUT", "DELETE"])
-            && ($server["CONTENT_TYPE"] ?? "") === "application/x-www-form-urlencoded"
-        ){
-            $contents   = $body->getContents();
-            
-            $body->rewind();
-            mb_parse_str($contents, $parsedBody);
-        }
         
         return new ServerRequest(
             $method,
             (new UriFactory())->createFromServer($server),
-            self::getRequestHeaders($server),
-            $body,
             $server,
             self::getUploadedFiles($_FILES),
             $_COOKIE,
             $_GET,
-            $parsedBody,
             self::getProtocolVersion($server)
         );
-    }
-    
-    private static function getRequestHeaders(array $server = null){
-        $return = [];
-
-        foreach(($server ?? $_SERVER) as $key => $value){
-            if((bool)preg_match("/\AHTTP_[0-9A-Z!#$%&'*+\-.^_`|~]+\z/", $key)){
-                $key    = substr($key, 5);
-
-                if(strlen($key) > 0){
-                    $key    = implode(
-                        "-", array_map("ucfirst", explode("_", strtolower($key)))
-                    );
-
-                    $return[$key]   = $value;
-                }
-            }
-        }
-
-        return $return;
     }
     
     /**
