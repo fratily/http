@@ -197,6 +197,81 @@ class RequestHandler implements RequestHandlerInterface{
     }
     
     /**
+     * 指定したミドルウェアオブジェクトの前にミドルウェアを挿入する
+     *
+     * @param   MiddlewareInterface $target
+     * @param   MiddlewareInterface $middleware
+     *
+     * @return  $this
+     * 
+     * @throws  \RuntimeException
+     */
+    public function insertBeforeObject(MiddlewareInterface $target, MiddlewareInterface $middleware){
+        if($this->ran){
+            throw new \RuntimeException;
+        }
+        
+        $keys   = [];
+        $i      = 0;
+
+        foreach($this->queue as $key => $val){
+            if($val === $target){
+                $keys[] = $key;
+            }
+        }
+
+        if(empty($keys)){
+            throw new \RuntimeException;
+        }
+        
+        foreach($keys as $key){
+            $this->queue->add($key + $i++, $middleware);
+        }
+
+        $this->addClass($middleware);
+        
+        return $this;
+    }
+
+    /**
+     * 指定したミドルウェアオブジェクトの後にミドルウェアを挿入する
+     *
+     * @param   MiddlewareInterface $target
+     * @param   MiddlewareInterface $middleware
+     *
+     * @return  $this
+     * 
+     * @throws  \RuntimeException
+     */
+    public function insertAfterObject(MiddlewareInterface $target, MiddlewareInterface $middleware){
+        if($this->ran){
+            throw new \RuntimeException;
+        }
+
+        $keys   = [];
+        $i      = 1;
+
+        foreach($this->queue as $key => $val){
+            if($val === $target){
+                $keys[] = $key;
+            }
+        }
+
+        if(empty($keys)){
+            foreach($keys as $key){
+                $this->queue->add($key + $i++, $middleware);
+            }
+        }else{
+            $this->append($middleware);
+        }
+
+        $this->addClass($middleware);
+
+        return $this;
+    }
+
+    
+    /**
      * 指定した位置にミドルウェアを挿入する
      * 
      * @param   int $key
