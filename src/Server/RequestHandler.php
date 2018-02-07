@@ -246,6 +246,8 @@ class RequestHandler implements RequestHandlerInterface{
     /**
      * 指定した位置にミドルウェアを挿入する
      * 
+     * 指定位置が範囲場合の場合は末尾に追加される。
+     * 
      * @param   int $key
      * @param   MiddlewareInterface $middleware
      *
