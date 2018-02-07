@@ -66,7 +66,7 @@ class Response extends Message implements ResponseInterface{
      * {@inheritoc}
      */
     public function getReasonPhrase(){
-        return $this->phrase;
+        return HttpStatus::STATUS_PHRASES[$this->code];
     }
 
     /**
