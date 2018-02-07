@@ -120,11 +120,11 @@ class RequestHandler implements RequestHandlerInterface{
             $this->runningQueue = clone $this->queue;
         }
         
-        $this->runningLevel = $this->runningLevel + 1;
+        $this->runningLevel++;
         
         if($this->runningQueue->isEmpty()){
             if($this->response === null && $this->factory === null){
-                $this->runningLevel = $this->runningLevel - 1;
+                $this->runningLevel--;
                 
                 if($this->runningLevel === 0){
                     $this->runningQueue = null;
@@ -138,7 +138,7 @@ class RequestHandler implements RequestHandlerInterface{
             $response   = $this->runningQueue->dequeue()->process($request, $this);
         }
         
-        $this->runningLevel = $this->runningLevel - 1;
+        $this->runningLevel--;
         
         if($this->runningLevel === 0){
             $this->runningQueue = null;
