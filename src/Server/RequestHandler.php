@@ -125,33 +125,24 @@ class RequestHandler implements RequestHandlerInterface{
     /**
      * 指定したミドルウェアクラスの前にミドルウェアを挿入する
      *
-     * @param   string  $name
+     * @param   string  $target
      * @param   MiddlewareInterface $middleware
      *
      * @return  $this
      * 
      * @throws  \RuntimeException
      */
-    public function insertBefore(string $name, MiddlewareInterface $middleware){
+    public function insertBefore(string $target, MiddlewareInterface $middleware){
         if($this->ran){
             throw new \RuntimeException;
         }
         
-        if($this->hasClass($name)){
-            $keys   = [];
-            $i      = 0;
-            
-            foreach($this->queue as $key => $val){
-                if($name === get_class($val)){
-                    $keys[] = $key;
-                }
-            }
+        if(($keys = $this->getClassIndexes($target)) !== null){
+            $i  = 0;
             
             foreach($keys as $key){
                 $this->queue->add($key + $i++, $middleware);
             }
-            
-            $this->addClass($middleware);
         }else{
             throw new \RuntimeException;
         }
@@ -162,33 +153,24 @@ class RequestHandler implements RequestHandlerInterface{
     /**
      * 指定したミドルウェアクラスの後にミドルウェアを挿入する
      *
-     * @param   string $name
+     * @param   string  $target
      * @param   MiddlewareInterface $middleware
      *
      * @return  $this
      * 
      * @throws  \RuntimeException
      */
-    public function insertAfter(string $name, MiddlewareInterface $middleware){
+    public function insertAfter(string $target, MiddlewareInterface $middleware){
         if($this->ran){
             throw new \RuntimeException;
         }
         
-        if($this->hasClass($name)){
-            $keys   = [];
-            $i      = 1;
-            
-            foreach($this->queue as $key => $val){
-                if($name === get_class($val)){
-                    $keys[] = $key;
-                }
-            }
+        if(($keys = $this->getClassIndexes($target)) !== null){
+            $i  = 1;
             
             foreach($keys as $key){
                 $this->queue->add($key + $i++, $middleware);
             }
-            
-            $this->addClass($middleware);
         }else{
             $this->append($middleware);
         }
@@ -211,24 +193,15 @@ class RequestHandler implements RequestHandlerInterface{
             throw new \RuntimeException;
         }
         
-        $keys   = [];
-        $i      = 0;
-
-        foreach($this->queue as $key => $val){
-            if($val === $target){
-                $keys[] = $key;
+        if(($keys = $this->getObjectIndexes($target)) !== null){
+            $i  = 0;
+            
+            foreach($keys as $key){
+                $this->queue->add($key + $i++, $middleware);
             }
-        }
-
-        if(empty($keys)){
+        }else{
             throw new \RuntimeException;
         }
-        
-        foreach($keys as $key){
-            $this->queue->add($key + $i++, $middleware);
-        }
-
-        $this->addClass($middleware);
         
         return $this;
     }
@@ -247,26 +220,17 @@ class RequestHandler implements RequestHandlerInterface{
         if($this->ran){
             throw new \RuntimeException;
         }
-
-        $keys   = [];
-        $i      = 1;
-
-        foreach($this->queue as $key => $val){
-            if($val === $target){
-                $keys[] = $key;
-            }
-        }
-
-        if(empty($keys)){
+        
+        if(($keys = $this->getObjectIndexes($target)) !== null){
+            $i  = 1;
+            
             foreach($keys as $key){
                 $this->queue->add($key + $i++, $middleware);
             }
         }else{
             $this->append($middleware);
         }
-
-        $this->addClass($middleware);
-
+        
         return $this;
     }
 
