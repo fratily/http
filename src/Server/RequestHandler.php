@@ -297,6 +297,48 @@ class RequestHandler implements RequestHandlerInterface{
     }
     
     /**
+     * 指定したミドルウェアクラスの位置を返す
+     * 
+     * @param   string  $target
+     * 
+     * @return  int[]|null
+     */
+    protected function getClassIndexes(string $target){
+        $keys   = [];
+        $find   = false;
+        
+        foreach($this->queue as $key => $val){
+            if($val === $target){
+                $find   = true;
+                $keys[] = $key;
+            }
+        }
+        
+        return $find ? $keys : null;
+    }
+    
+    /**
+     * 指定したミドルウェアオブジェクトの位置を返す
+     * 
+     * @param   MiddlewareInterface $target
+     * 
+     * @return  int[]|null
+     */
+    protected function getObjectIndexes(MiddlewareInterface $target){
+        $keys   = [];
+        $find   = false;
+        
+        foreach($this->queue as $key => $val){
+            if($val === $target){
+                $find   = true;
+                $keys[] = $key;
+            }
+        }
+        
+        return $find ? $keys : null;
+    }
+    
+    /**
      * ミドルウェア登録フラグを立てる
      * 
      * @param   MiddlewareInterafce $middleware
