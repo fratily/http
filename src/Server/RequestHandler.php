@@ -30,6 +30,16 @@ class RequestHandler implements RequestHandlerInterface{
     private $queue;
     
     /**
+     * @var \SplQueue|null
+     */
+    private $runningQueue;
+    
+    /**
+     * @var int
+     */
+    private $runningLevel;
+    
+    /**
      * @var ResponseFactoryInterface|null
      */
     private $factory;
@@ -40,18 +50,14 @@ class RequestHandler implements RequestHandlerInterface{
     private $response;
     
     /**
-     * @var bool
-     */
-    private $ran    = false;
-    
-    /**
      * Constructor
      * 
      * @param   ResponseFactoryInterface
      */
     public function __construct(ResponseFactoryInterface $factory = null){
-        $this->queue    = new \SplQueue();
-        $this->factory  = $factory;
+        $this->runningLevel = 0;
+        $this->queue        = new \SplQueue();
+        $this->factory      = $factory;
     }
     
     /**
@@ -99,33 +105,43 @@ class RequestHandler implements RequestHandlerInterface{
      * @return  ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface{
-        $this->ran  = true;
-        
-        if($this->queue->isEmpty()){
-            if($this->response !== null){
-                return $this->response;
-            }else if($this->factory !== null){
-                return $this->factory->createResponse();
-            }
-            
-            throw new \RuntimeException;
+        if($this->runningQueue === null){
+            $this->runningQueue = clone $this->queue;
         }
         
-        return $this->queue->dequeue()->process($request, $this);
+        $this->runningLevel = $this->runningLevel + 1;
+        
+        if($this->runningQueue->isEmpty()){
+            if($this->response === null && $this->factory === null){
+                $this->runningLevel = $this->runningLevel - 1;
+                
+                if($this->runningLevel === 0){
+                    $this->runningQueue = null;
+                }
+
+                throw new \RuntimeException;
+            }
+            
+            $response   = $this->response ?? $this->factory->createResponse();
+        }else{
+            $response   = $this->runningQueue->dequeue()->process($request, $this);
+        }
+        
+        $this->runningLevel = $this->runningLevel - 1;
+        
+        if($this->runningLevel === 0){
+            $this->runningQueue = null;
+        }
+        
+        return $response;
     }
     
     /**
      * ミドルウェアを末尾に追加する
      * 
      * @param   MiddlewareInterface $middleware
-     * 
-     * @throws  \RuntimeException
      */
     public function append(MiddlewareInterface $middleware){
-        if($this->ran){
-            throw new \RuntimeException;
-        }
-        
         $this->queue->push($middleware);
         
         return $this;
@@ -137,14 +153,8 @@ class RequestHandler implements RequestHandlerInterface{
      * @param   MiddlewareInterface $middleware
      *
      * @return  $this
-     * 
-     * @throws  \RuntimeException
      */
     public function prepend(MiddlewareInterface $middleware){
-        if($this->ran){
-            throw new \RuntimeException;
-        }
-        
         $this->queue->unshift($middleware);
         
         return $this;
@@ -163,10 +173,6 @@ class RequestHandler implements RequestHandlerInterface{
      * @throws  \RuntimeException
      */
     public function insertBefore(string $target, MiddlewareInterface $middleware){
-        if($this->ran){
-            throw new \RuntimeException;
-        }
-        
         if(($keys = $this->getClassIndexes($target)) !== null){
             $i  = 0;
             
@@ -189,14 +195,8 @@ class RequestHandler implements RequestHandlerInterface{
      * @param   MiddlewareInterface $middleware
      *
      * @return  $this
-     * 
-     * @throws  \RuntimeException
      */
     public function insertAfter(string $target, MiddlewareInterface $middleware){
-        if($this->ran){
-            throw new \RuntimeException;
-        }
-        
         if(($keys = $this->getClassIndexes($target)) !== null){
             $i  = 1;
             
@@ -223,10 +223,6 @@ class RequestHandler implements RequestHandlerInterface{
      * @throws  \RuntimeException
      */
     public function insertBeforeObject(MiddlewareInterface $target, MiddlewareInterface $middleware){
-        if($this->ran){
-            throw new \RuntimeException;
-        }
-        
         if(($keys = $this->getObjectIndexes($target)) !== null){
             $i  = 0;
             
@@ -249,14 +245,8 @@ class RequestHandler implements RequestHandlerInterface{
      * @param   MiddlewareInterface $middleware
      *
      * @return  $this
-     * 
-     * @throws  \RuntimeException
      */
     public function insertAfterObject(MiddlewareInterface $target, MiddlewareInterface $middleware){
-        if($this->ran){
-            throw new \RuntimeException;
-        }
-        
         if(($keys = $this->getObjectIndexes($target)) !== null){
             $i  = 1;
             
@@ -280,14 +270,8 @@ class RequestHandler implements RequestHandlerInterface{
      * @param   MiddlewareInterface $middleware
      *
      * @return  $this
-     * 
-     * @throws  \RuntimeException
      */
     public function insertAt(int $key, MiddlewareInterface $middleware){
-        if($this->ran){
-            throw new \RuntimeException;
-        }
-        
         if(isset($this->queue[$key])){
             $this->queue->add($key, $middleware);
         }else{
