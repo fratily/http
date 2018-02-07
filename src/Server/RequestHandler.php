@@ -61,6 +61,17 @@ class RequestHandler implements RequestHandlerInterface{
     }
     
     /**
+     * Clone
+     */
+    public function __clone(){
+        $this->queue    = clone $this->queue;
+        
+        if($this->runningQueue !== null){
+            $this->runningQueue = clone $this->runningQueue;
+        }
+    }
+    
+    /**
      * レスポンスファクトリーを設定
      * 
      * @param   ResponseFactoryInterface    $factory
