@@ -103,7 +103,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
         $parsedBody = null,
         string $version = "1.1"
     ){
-        parent::__construct($method, $uri, $headers, $body, $version);
+        parent::__construct($method, $uri, $headers, $body ?? new Stream\InputStream(), $version);
         
         if(($uploadedFiles = self::validUploadedFiles($uploadedFiles)) === false){
             throw new \InvalidArgumentException();
