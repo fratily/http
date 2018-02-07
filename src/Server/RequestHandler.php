@@ -17,6 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use Interop\Http\Factory\ResponseFactoryInterface;
 
 /**
  * 
@@ -27,6 +28,11 @@ class RequestHandler implements RequestHandlerInterface{
      * @var \SplQueue
      */
     private $queue;
+    
+    /**
+     * @var ResponseFactoryInterface|null
+     */
+    private $factory;
     
     /**
      * @var ResponseInterface|null
@@ -40,21 +46,49 @@ class RequestHandler implements RequestHandlerInterface{
     
     /**
      * Constructor
+     * 
+     * @param   ResponseFactoryInterface
      */
-    public function __construct(ResponseInterface $response = null){
+    public function __construct(ResponseFactoryInterface $factory = null){
         $this->queue    = new \SplQueue();
-        $this->response = $response ?? new \Fratily\Http\Message\Response();
+        $this->factory  = $factory;
     }
     
     /**
-     * レスポンスインスタンスをセット
+     * レスポンスファクトリーを設定
+     * 
+     * @param   ResponseFactoryInterface    $factory
+     * 
+     * @return  $this
+     */
+    public function setResponseFactory(ResponseFactoryInterface $factory){
+        $this->factory  = $factory;
+        
+        return $this;
+    }
+    
+    /**
+     * レスポンスを設定
      * 
      * @param   ResponseInterface   $response
      * 
-     * @return  void
+     * @return  $this
      */
     public function setResponse(ResponseInterface $response){
         $this->response = $response;
+        
+        return $this;
+    }
+    
+    /*
+     * レスポンスを削除
+     * 
+     * @return  $this
+     */
+    public function unsetResponse(){
+        $this->response = null;
+        
+        return $this;
     }
     
     /**
@@ -68,11 +102,13 @@ class RequestHandler implements RequestHandlerInterface{
         $this->ran  = true;
         
         if($this->queue->isEmpty()){
-            if($this->response === null){
-                throw new \RuntimeException;
+            if($this->response !== null){
+                return $this->response;
+            }else if($this->factory !== null){
+                return $this->factory->createResponse();
             }
             
-            return $this->response;
+            throw new \RuntimeException;
         }
         
         return $this->queue->dequeue()->process($request, $this);
