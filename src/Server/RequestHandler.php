@@ -125,6 +125,8 @@ class RequestHandler implements RequestHandlerInterface{
     /**
      * 指定したミドルウェアクラスの前にミドルウェアを挿入する
      *
+     * 指定クラスが存在しなければ例外をスローする。
+     * 
      * @param   string  $target
      * @param   MiddlewareInterface $middleware
      *
@@ -153,6 +155,8 @@ class RequestHandler implements RequestHandlerInterface{
     /**
      * 指定したミドルウェアクラスの後にミドルウェアを挿入する
      *
+     * 指定クラスが存在しなければ末尾に追加する。
+     * 
      * @param   string  $target
      * @param   MiddlewareInterface $middleware
      *
@@ -181,6 +185,8 @@ class RequestHandler implements RequestHandlerInterface{
     /**
      * 指定したミドルウェアオブジェクトの前にミドルウェアを挿入する
      *
+     * 指定オブジェクトが存在しなければ例外をスローする。
+     * 
      * @param   MiddlewareInterface $target
      * @param   MiddlewareInterface $middleware
      *
@@ -208,6 +214,8 @@ class RequestHandler implements RequestHandlerInterface{
 
     /**
      * 指定したミドルウェアオブジェクトの後にミドルウェアを挿入する
+     * 
+     * 指定オブジェクトが存在しなければ末尾に追加する。
      *
      * @param   MiddlewareInterface $target
      * @param   MiddlewareInterface $middleware
