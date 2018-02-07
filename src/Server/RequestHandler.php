@@ -29,11 +29,6 @@ class RequestHandler implements RequestHandlerInterface{
     private $queue;
     
     /**
-     * @var bool[]
-     */
-    private $classes;
-    
-    /**
      * @var ResponseInterface|null
      */
     private $response;
@@ -48,7 +43,6 @@ class RequestHandler implements RequestHandlerInterface{
      */
     public function __construct(ResponseInterface $response = null){
         $this->queue    = new \SplQueue();
-        $this->classes  = [];
         $this->response = $response ?? new \Fratily\Http\Message\Response();
     }
     
@@ -97,7 +91,6 @@ class RequestHandler implements RequestHandlerInterface{
         }
         
         $this->queue->push($middleware);
-        $this->addClass($middleware);
         
         return $this;
     }
@@ -117,7 +110,6 @@ class RequestHandler implements RequestHandlerInterface{
         }
         
         $this->queue->unshift($middleware);
-        $this->addClass($middleware);
         
         return $this;
     }
@@ -262,7 +254,6 @@ class RequestHandler implements RequestHandlerInterface{
         
         if(isset($this->queue[$key])){
             $this->queue->add($key, $middleware);
-            $this->addClass($middleware);
         }else{
             $this->append($middleware);
         }
@@ -313,17 +304,6 @@ class RequestHandler implements RequestHandlerInterface{
     }
     
     /**
-     * ミドルウェア登録フラグを立てる
-     * 
-     * @param   MiddlewareInterafce $middleware
-     * 
-     * @return  void
-     */
-    private function addClass(MiddlewareInterface $middleware){
-        $this->classes[get_class($middleware)]  = true;
-    }
-    
-    /**
      * 指定した名前のミドルウェアが登録されているか確認する
      * 
      * @param   string  $name
@@ -331,6 +311,6 @@ class RequestHandler implements RequestHandlerInterface{
      * @return  bool
      */
     public function hasClass(string $name){
-        return $this->classes[$name] ?? false;
+        return $this->getClassIndexes($name) !== null;
     }
 }
