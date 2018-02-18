@@ -20,7 +20,7 @@ use Psr\Http\Message\UriInterface;
 /**
  */
 class ServerRequest extends Request implements ServerRequestInterface{
-    
+
     /**
      * @var mixed[]
      */
@@ -30,7 +30,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
      * @var UploadedFileInterface[]
      */
     private $uploadedFiles  = [];
-    
+
     /**
      * @var mixed[]
      */
@@ -45,15 +45,15 @@ class ServerRequest extends Request implements ServerRequestInterface{
      * @var null|mixed[]
      */
     private $parsedBody;
-    
+
     /**
      * @var mixed[]
      */
     private $attributes     = [];
-    
+
     /**
      * UploadedFiles配列のバリデーションを行う
-     * 
+     *
      * @param   mixed   $uploadedFiles
      * @return  bool
      */
@@ -61,25 +61,25 @@ class ServerRequest extends Request implements ServerRequestInterface{
         if(!is_array($uploadedFiles)){
             return false;
         }
-        
+
         foreach($uploadedFiles as $file){
             if(is_array($file)){
-                if(self::validUploadedFiles($file)){
+                if(!self::validUploadedFiles($file)){
                     return false;
                 }
             }else if(!($file instanceof UploadedFileInterface)){
                 return false;
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * サーバーパラメータからHTTPリクエストヘッダーを抽出する
-     * 
+     *
      * @param   mixed[] $server
-     * 
+     *
      * @return  mixed[]
      */
     private static function extractionHeaders(array $server){
@@ -101,10 +101,10 @@ class ServerRequest extends Request implements ServerRequestInterface{
 
         return $return;
     }
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param   string  $method
      * @param   UriInterface $uri
      * @param   mixed[] $serverParams
@@ -112,7 +112,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
      * @param   mixed[] $cookieParams
      * @param   mixed[] $queryParams
      * @param   string  $version
-     * 
+     *
      * @throws  \InvalidArgumentException
      */
     public function __construct(
@@ -131,23 +131,23 @@ class ServerRequest extends Request implements ServerRequestInterface{
             ($body = new Stream\InputStream()),
             $version
         );
-        
-        if(($uploadedFiles = self::validUploadedFiles($uploadedFiles)) === false){
+
+        if(!self::validUploadedFiles($uploadedFiles)){
             throw new \InvalidArgumentException();
         }
-        
+
         $this->serverParams     = $serverParams;
         $this->uploadedFiles    = $uploadedFiles;
         $this->cookieParams     = $cookieParams;
         $this->queryParams      = $queryParams;
-        
+
         if(in_array($method, ["POST", "PUT", "PATCH"])
             && ($server["CONTENT_TYPE"] ?? "") === "application/x-www-form-urlencoded"
         ){
             $body->rewind();
             $content    = $body->getContents();
             $body->rewind();
-            
+
             mb_parse_str($content, $this->parsedBody);
         }
     }
@@ -173,10 +173,10 @@ class ServerRequest extends Request implements ServerRequestInterface{
         if(!self::validUploadedFiles($uploadedFiles)){
             throw new \InvalidArgumentException();
         }
-        
+
         $return = clone $this;
         $return->uploadedFiles  = $uploadedFiles;
-        
+
         return $return;
     }
 
@@ -193,7 +193,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
     public function withCookieParams(array $cookies){
         $return = clone $this;
         $return->cookieParams   = $cookies;
-        
+
         return $return;
     }
 
@@ -210,7 +210,7 @@ class ServerRequest extends Request implements ServerRequestInterface{
     public function withQueryParams(array $query){
         $return = clone $this;
         $return->queryParams    = $query;
-        
+
         return $return;
     }
 
@@ -228,10 +228,10 @@ class ServerRequest extends Request implements ServerRequestInterface{
         if($parsedBody !== null && !is_array($parsedBody) && !is_object($parsedBody)){
             throw new \InvalidArgumentException();
         }
-        
+
         $return = clone $this;
         $return->parsedBody = $data;
-        
+
         return $return;
     }
 
@@ -244,28 +244,28 @@ class ServerRequest extends Request implements ServerRequestInterface{
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @throws  \InvalidArgumentException
      */
     public function getAttribute($name, $default = null){
         if(!is_scalar($name)){
             throw new \InvalidArgumentException();
         }
-        
+
         return array_key_exists($name, $this->attributes)
             ? $this->attributes[$name] : $default;
     }
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @throws  \InvalidArgumentException
      */
     public function withAttribute($name, $value){
         if(!is_scalar($name)){
             throw new \InvalidArgumentException();
         }
-        
+
         if(array_key_exists($name, $this->attributes)
             && $this->attributes[$name] === $value
         ){
@@ -274,27 +274,27 @@ class ServerRequest extends Request implements ServerRequestInterface{
             $return = clone $this;
             $return->attributes[$name]  = $value;
         }
-        
+
         return $return;
     }
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @throws  \InvalidArgumentException
      */
     public function withoutAttribute($name){
         if(!is_scalar($name)){
             throw new \InvalidArgumentException();
         }
-        
+
         if(!array_key_exists($name, $this->attributes)){
             $return = $this;
         }else{
             $return = clone $this;
             unset($return->attributes[$name]);
         }
-        
+
         return $return;
     }
 }
