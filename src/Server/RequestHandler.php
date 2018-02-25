@@ -231,6 +231,17 @@ class RequestHandler implements RequestHandlerInterface{
 
         return $this;
     }
+    
+    /**
+     * 指定した名前のミドルウェアが登録されているか確認する
+     *
+     * @param   string  $name
+     *
+     * @return  bool
+     */
+    public function hasClass(string $name){
+        return $this->getClassIndexes($name) !== null;
+    }
 
     /**
      * キューの指定インデックスの前もしくは後ろにミドルウェアを追加する
@@ -312,16 +323,5 @@ class RequestHandler implements RequestHandlerInterface{
         }
 
         return empty($keys) ? null : $keys;
-    }
-
-    /**
-     * 指定した名前のミドルウェアが登録されているか確認する
-     *
-     * @param   string  $name
-     *
-     * @return  bool
-     */
-    public function hasClass(string $name){
-        return $this->getClassIndexes($name) !== null;
     }
 }
