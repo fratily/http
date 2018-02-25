@@ -20,141 +20,89 @@ use Psr\Http\Server\MiddlewareInterface;
 use Interop\Http\Factory\ResponseFactoryInterface;
 
 /**
- * 
+ *
  */
 class RequestHandler implements RequestHandlerInterface{
-    
+
     /**
      * @var \SplQueue
      */
     private $queue;
-    
+
     /**
      * @var \SplQueue|null
      */
     private $runningQueue;
-    
+
     /**
      * @var int
      */
     private $runningLevel;
-    
+
     /**
      * @var ResponseFactoryInterface|null
      */
     private $factory;
-    
-    /**
-     * @var ResponseInterface|null
-     */
-    private $response;
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param   ResponseFactoryInterface
      */
-    public function __construct(ResponseFactoryInterface $factory = null){
+    public function __construct(ResponseFactoryInterface $factory){
         $this->runningLevel = 0;
         $this->queue        = new \SplQueue();
         $this->factory      = $factory;
     }
-    
+
     /**
      * Clone
      */
     public function __clone(){
         $this->queue    = clone $this->queue;
-        
+
         if($this->runningQueue !== null){
             $this->runningQueue = clone $this->runningQueue;
         }
     }
-    
-    /**
-     * レスポンスファクトリーを設定
-     * 
-     * @param   ResponseFactoryInterface    $factory
-     * 
-     * @return  $this
-     */
-    public function setResponseFactory(ResponseFactoryInterface $factory){
-        $this->factory  = $factory;
-        
-        return $this;
-    }
-    
-    /**
-     * レスポンスを設定
-     * 
-     * @param   ResponseInterface   $response
-     * 
-     * @return  $this
-     */
-    public function setResponse(ResponseInterface $response){
-        $this->response = $response;
-        
-        return $this;
-    }
-    
-    /*
-     * レスポンスを削除
-     * 
-     * @return  $this
-     */
-    public function unsetResponse(){
-        $this->response = null;
-        
-        return $this;
-    }
-    
+
     /**
      * {@inheritdoc}
-     * 
+     *
      * @param   ServerRequestInterface  $request
-     * 
+     *
      * @return  ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface{
         if($this->runningQueue === null){
             $this->runningQueue = clone $this->queue;
         }
-        
-        $this->runningLevel++;
-        
-        if($this->runningQueue->isEmpty()){
-            if($this->response === null && $this->factory === null){
-                $this->runningLevel--;
-                
-                if($this->runningLevel === 0){
-                    $this->runningQueue = null;
-                }
 
-                throw new \RuntimeException;
-            }
-            
-            $response   = $this->response ?? $this->factory->createResponse();
+        $this->runningLevel++;
+
+        if($this->runningQueue->isEmpty()){
+            $response   = $this->factory->createResponse();
         }else{
             $response   = $this->runningQueue->dequeue()->process($request, $this);
         }
-        
+
         $this->runningLevel--;
-        
+
         if($this->runningLevel === 0){
             $this->runningQueue = null;
         }
-        
+
         return $response;
     }
-    
+
     /**
      * ミドルウェアを末尾に追加する
-     * 
+     *
      * @param   MiddlewareInterface $middleware
      */
     public function append(MiddlewareInterface $middleware){
         $this->queue->push($middleware);
-        
+
         return $this;
     }
 
@@ -167,7 +115,7 @@ class RequestHandler implements RequestHandlerInterface{
      */
     public function prepend(MiddlewareInterface $middleware){
         $this->queue->unshift($middleware);
-        
+
         return $this;
     }
 
@@ -175,18 +123,18 @@ class RequestHandler implements RequestHandlerInterface{
      * 指定したミドルウェアクラスの前にミドルウェアを挿入する
      *
      * 指定クラスが存在しなければ例外をスローする。
-     * 
+     *
      * @param   string  $target
      * @param   MiddlewareInterface $middleware
      *
      * @return  $this
-     * 
+     *
      * @throws  \RuntimeException
      */
     public function insertBefore(string $target, MiddlewareInterface $middleware){
         if(($keys = $this->getClassIndexes($target)) !== null){
             $i  = 0;
-            
+
             foreach($keys as $key){
                 $this->queue->add($key + $i++, $middleware);
             }
@@ -201,7 +149,7 @@ class RequestHandler implements RequestHandlerInterface{
      * 指定したミドルウェアクラスの後にミドルウェアを挿入する
      *
      * 指定クラスが存在しなければ末尾に追加する。
-     * 
+     *
      * @param   string  $target
      * @param   MiddlewareInterface $middleware
      *
@@ -210,7 +158,7 @@ class RequestHandler implements RequestHandlerInterface{
     public function insertAfter(string $target, MiddlewareInterface $middleware){
         if(($keys = $this->getClassIndexes($target)) !== null){
             $i  = 1;
-            
+
             foreach($keys as $key){
                 $this->queue->add($key + $i++, $middleware);
             }
@@ -220,36 +168,36 @@ class RequestHandler implements RequestHandlerInterface{
 
         return $this;
     }
-    
+
     /**
      * 指定したミドルウェアオブジェクトの前にミドルウェアを挿入する
      *
      * 指定オブジェクトが存在しなければ例外をスローする。
-     * 
+     *
      * @param   MiddlewareInterface $target
      * @param   MiddlewareInterface $middleware
      *
      * @return  $this
-     * 
+     *
      * @throws  \RuntimeException
      */
     public function insertBeforeObject(MiddlewareInterface $target, MiddlewareInterface $middleware){
         if(($keys = $this->getObjectIndexes($target)) !== null){
             $i  = 0;
-            
+
             foreach($keys as $key){
                 $this->queue->add($key + $i++, $middleware);
             }
         }else{
             throw new \RuntimeException;
         }
-        
+
         return $this;
     }
 
     /**
      * 指定したミドルウェアオブジェクトの後にミドルウェアを挿入する
-     * 
+     *
      * 指定オブジェクトが存在しなければ末尾に追加する。
      *
      * @param   MiddlewareInterface $target
@@ -260,23 +208,23 @@ class RequestHandler implements RequestHandlerInterface{
     public function insertAfterObject(MiddlewareInterface $target, MiddlewareInterface $middleware){
         if(($keys = $this->getObjectIndexes($target)) !== null){
             $i  = 1;
-            
+
             foreach($keys as $key){
                 $this->queue->add($key + $i++, $middleware);
             }
         }else{
             $this->append($middleware);
         }
-        
+
         return $this;
     }
 
-    
+
     /**
      * 指定した位置にミドルウェアを挿入する
-     * 
+     *
      * 指定位置が範囲場合の場合は末尾に追加される。
-     * 
+     *
      * @param   int $key
      * @param   MiddlewareInterface $middleware
      *
@@ -288,57 +236,57 @@ class RequestHandler implements RequestHandlerInterface{
         }else{
             $this->append($middleware);
         }
-        
+
         return $this;
     }
-    
+
     /**
      * 指定したミドルウェアクラスの位置を返す
-     * 
+     *
      * @param   string  $target
-     * 
+     *
      * @return  int[]|null
      */
     protected function getClassIndexes(string $target){
         $keys   = [];
         $find   = false;
-        
+
         foreach($this->queue as $key => $val){
             if($val === $target){
                 $find   = true;
                 $keys[] = $key;
             }
         }
-        
+
         return $find ? $keys : null;
     }
-    
+
     /**
      * 指定したミドルウェアオブジェクトの位置を返す
-     * 
+     *
      * @param   MiddlewareInterface $target
-     * 
+     *
      * @return  int[]|null
      */
     protected function getObjectIndexes(MiddlewareInterface $target){
         $keys   = [];
         $find   = false;
-        
+
         foreach($this->queue as $key => $val){
             if($val === $target){
                 $find   = true;
                 $keys[] = $key;
             }
         }
-        
+
         return $find ? $keys : null;
     }
-    
+
     /**
      * 指定した名前のミドルウェアが登録されているか確認する
-     * 
+     *
      * @param   string  $name
-     * 
+     *
      * @return  bool
      */
     public function hasClass(string $name){
