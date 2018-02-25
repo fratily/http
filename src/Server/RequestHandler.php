@@ -231,7 +231,7 @@ class RequestHandler implements RequestHandlerInterface{
 
         return $this;
     }
-    
+
     /**
      * 指定した名前のミドルウェアが登録されているか確認する
      *
@@ -241,6 +241,17 @@ class RequestHandler implements RequestHandlerInterface{
      */
     public function hasClass(string $name){
         return $this->getClassIndexes($name) !== null;
+    }
+
+    /**
+     * 指定したミドルウェアが登録されているか確認する
+     *
+     * @param   MiddlewareInterface $middleware
+     *
+     * @return  bool
+     */
+    public function hasObject(MiddlewareInterface $middleware){
+        return $this->getObjectIndexes($middleware) !== null;
     }
 
     /**
