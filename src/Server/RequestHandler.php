@@ -30,9 +30,9 @@ class RequestHandler implements RequestHandlerInterface{
     private $queue;
 
     /**
-     * @var \SplQueue|null
+     * @var ResponseFactoryInterface
      */
-    private $runningQueue;
+    private $factory;
 
     /**
      * @var int
@@ -40,9 +40,9 @@ class RequestHandler implements RequestHandlerInterface{
     private $runningLevel;
 
     /**
-     * @var ResponseFactoryInterface|null
+     * @var \SplQueue|null
      */
-    private $factory;
+    private $runningQueue;
 
     /**
      * Constructor
@@ -50,20 +50,18 @@ class RequestHandler implements RequestHandlerInterface{
      * @param   ResponseFactoryInterface
      */
     public function __construct(ResponseFactoryInterface $factory){
-        $this->runningLevel = 0;
         $this->queue        = new \SplQueue();
         $this->factory      = $factory;
+        $this->runningLevel = 0;
     }
 
     /**
      * Clone
      */
     public function __clone(){
-        $this->queue    = clone $this->queue;
-
-        if($this->runningQueue !== null){
-            $this->runningQueue = clone $this->runningQueue;
-        }
+        $this->queue        = clone $this->queue;
+        $this->runningLevel = 0;
+        $this->runningQueue = null;
     }
 
     /**
