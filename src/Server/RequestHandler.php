@@ -217,7 +217,49 @@ class RequestHandler implements RequestHandlerInterface{
         return $this;
     }
 
-    
+    /**
+     * 指定したミドルウェアクラスを別のミドルウェアに置き換える
+     *
+     * @param   MiddlewareInterface $target
+     * @param   MiddlewareInterface $middleware
+     *
+     * @return  $this
+     */
+    public function replaceClass(string $target, MiddlewareInterface $middleware){
+        $this->replace($this->getClassIndexes($target) ?? [], $middleware);
+
+        return $this;
+    }
+
+    /**
+     * 指定したミドルウェアオブジェクトを別のミドルウェアに置き換える
+     *
+     * @param   MiddlewareInterface $target
+     * @param   MiddlewareInterface $middleware
+     *
+     * @return  $this
+     */
+    public function replaceObject(MiddlewareInterface $target, MiddlewareInterface $middleware){
+        $this->replace($this->getObjectIndexes($target) ?? [], $middleware);
+
+        return $this;
+    }
+
+    /**
+     * キューの指定インデックスのミドルウェアを置き換える
+     *
+     * @param   int[]   $indexes
+     * @param   MiddlewareInterface $middleware
+     *
+     * @return  void
+     */
+    protected function replace(array $indexes, MiddlewareInterface $middleware){
+        foreach($indexes as $index){
+            if(isset($this->queue[$index])){
+                $this->queue[$index]    = $middleware;
+            }
+        }
+    }
 
     /**
      * 指定したミドルウェアクラスの位置を返す
