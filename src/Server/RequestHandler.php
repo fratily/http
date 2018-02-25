@@ -283,16 +283,14 @@ class RequestHandler implements RequestHandlerInterface{
      */
     protected function getClassIndexes(string $target){
         $keys   = [];
-        $find   = false;
 
         foreach($this->queue as $key => $val){
             if($val === $target){
-                $find   = true;
                 $keys[] = $key;
             }
         }
 
-        return $find ? $keys : null;
+        return empty($keys) ? null : $keys;
     }
 
     /**
@@ -304,16 +302,14 @@ class RequestHandler implements RequestHandlerInterface{
      */
     protected function getObjectIndexes(MiddlewareInterface $target){
         $keys   = [];
-        $find   = false;
 
         foreach($this->queue as $key => $val){
             if($val === $target){
-                $find   = true;
                 $keys[] = $key;
             }
         }
 
-        return $find ? $keys : null;
+        return empty($keys) ? null : $keys;
     }
 
     /**
