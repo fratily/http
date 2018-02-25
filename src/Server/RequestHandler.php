@@ -217,26 +217,7 @@ class RequestHandler implements RequestHandlerInterface{
         return $this;
     }
 
-
-    /**
-     * 指定した位置にミドルウェアを挿入する
-     *
-     * 指定位置が範囲場合の場合は末尾に追加される。
-     *
-     * @param   int $key
-     * @param   MiddlewareInterface $middleware
-     *
-     * @return  $this
-     */
-    public function insertAt(int $key, MiddlewareInterface $middleware){
-        if(isset($this->queue[$key])){
-            $this->queue->add($key, $middleware);
-        }else{
-            $this->append($middleware);
-        }
-
-        return $this;
-    }
+    
 
     /**
      * 指定したミドルウェアクラスの位置を返す
