@@ -285,7 +285,7 @@ class RequestHandler implements RequestHandlerInterface{
         $keys   = [];
 
         foreach($this->queue as $key => $val){
-            if($val === $target){
+            if(get_class($val) === $target){
                 $keys[] = $key;
             }
         }
