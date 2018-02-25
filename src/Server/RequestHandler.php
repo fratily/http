@@ -280,6 +280,8 @@ class RequestHandler implements RequestHandlerInterface{
      * @param   string  $target
      *
      * @return  int[]|null
+     *
+     * @todo    $targetがインターフェイスや抽象クラスの場合の対応を書く
      */
     protected function getClassIndexes(string $target){
         $keys   = [];
