@@ -24,6 +24,9 @@ use Interop\Http\Factory\ResponseFactoryInterface;
  */
 class RequestHandler implements RequestHandlerInterface{
 
+    const INSERT_BEFORE = 0;
+    const INSERT_AFTER  = 1;
+
     /**
      * @var \SplQueue
      */
@@ -130,12 +133,8 @@ class RequestHandler implements RequestHandlerInterface{
      * @throws  \RuntimeException
      */
     public function insertBefore(string $target, MiddlewareInterface $middleware){
-        if(($keys = $this->getClassIndexes($target)) !== null){
-            $i  = 0;
-
-            foreach($keys as $key){
-                $this->queue->add($key + $i++, $middleware);
-            }
+        if(($indexes = $this->getClassIndexes($target)) !== null){
+            $this->insert($indexes, $middleware, self::INSERT_BEFORE);
         }else{
             throw new \RuntimeException;
         }
@@ -153,13 +152,9 @@ class RequestHandler implements RequestHandlerInterface{
      *
      * @return  $this
      */
-    public function insertAfter(string $target, MiddlewareInterface $middleware){
-        if(($keys = $this->getClassIndexes($target)) !== null){
-            $i  = 1;
-
-            foreach($keys as $key){
-                $this->queue->add($key + $i++, $middleware);
-            }
+    public function insertAfterClass(string $target, MiddlewareInterface $middleware){
+        if(($indexes = $this->getClassIndexes($target)) !== null){
+            $this->insert($indexes, $middleware, self::INSERT_AFTER);
         }else{
             $this->append($middleware);
         }
@@ -180,12 +175,8 @@ class RequestHandler implements RequestHandlerInterface{
      * @throws  \RuntimeException
      */
     public function insertBeforeObject(MiddlewareInterface $target, MiddlewareInterface $middleware){
-        if(($keys = $this->getObjectIndexes($target)) !== null){
-            $i  = 0;
-
-            foreach($keys as $key){
-                $this->queue->add($key + $i++, $middleware);
-            }
+        if(($indexes = $this->getObjectIndexes($target)) !== null){
+            $this->insert($indexes, $middleware, self::INSERT_BEFORE);
         }else{
             throw new \RuntimeException;
         }
@@ -204,12 +195,8 @@ class RequestHandler implements RequestHandlerInterface{
      * @return  $this
      */
     public function insertAfterObject(MiddlewareInterface $target, MiddlewareInterface $middleware){
-        if(($keys = $this->getObjectIndexes($target)) !== null){
-            $i  = 1;
-
-            foreach($keys as $key){
-                $this->queue->add($key + $i++, $middleware);
-            }
+        if(($indexes = $this->getObjectIndexes($target)) !== null){
+            $this->insert($indexes, $middleware, self::INSERT_AFTER);
         }else{
             $this->append($middleware);
         }
@@ -243,6 +230,32 @@ class RequestHandler implements RequestHandlerInterface{
         $this->replace($this->getObjectIndexes($target) ?? [], $middleware);
 
         return $this;
+    }
+
+    /**
+     * キューの指定インデックスの前もしくは後ろにミドルウェアを追加する
+     *
+     * @param   int[]   $indexes
+     * @param   MiddlewareInterface $middleware
+     * @param   int $i
+     *      前に追加するか後に追加するか
+     *
+     * @return  void
+     *
+     * @throws  \InvalidArgumentException
+     */
+    protected function insert(array $indexes, MiddlewareInterface $middleware, int $i = self::INSERT_BEFORE){
+        if($i !== self::INSERT_BEFORE && $i !== self::INSERT_AFTER){
+            throw new \InvalidArgumentException();
+        }
+
+        foreach(asort(array_unique($indexes)) as $index){
+            $index  = $index + $i++;
+
+            if(isset($this->queue[$index])){
+                $this->queue->add($index, $middleware);
+            }
+        }
     }
 
     /**
