@@ -66,6 +66,17 @@ class RequestHandler implements RequestHandlerInterface{
         $this->runningLevel = 0;
         $this->runningQueue = null;
     }
+    
+    /**
+     * レスポンスファクトリを変更する
+     * 
+     * @param   ResponseFactoryInterface    $factory
+     * 
+     * @return  void
+     */
+    public function setResopnseFactory(ResponseFactoryInterface $factory){
+        $this->factory  = $factory;
+    }
 
     /**
      * {@inheritdoc}
